@@ -11,7 +11,8 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 public class ResourceController {
-
+	
+	//리소스 서버 
     @GetMapping("/main")
     public String main() {    
         return "board";
