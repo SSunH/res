@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 	    protected void configure(HttpSecurity http) throws Exception {
 	        http
 	            .authorizeRequests()
-	                .antMatchers("/main","/loginok").permitAll()
+	                .antMatchers("/main","/board","/write").permitAll()
 	                .anyRequest().authenticated()
 	                .and()         
 	            .logout()

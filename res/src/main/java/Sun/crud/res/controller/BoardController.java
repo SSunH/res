@@ -1,48 +1,102 @@
-//package Sun.crud.res.controller;
-//
-//
-//
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpSession;
-//
-//import org.springframework.http.HttpEntity;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
-//import org.springframework.web.client.RestTemplate;
-//
-//@RestController
-//public class BoardController {
-//	private RestTemplate restTemplate;
-//
-//    @RequestMapping("/board")
-//    public String board(HttpServletRequest request, HttpSession session) {        // 세션에서 토큰 가져오기
-//        String accessToken = (String) session.getAttribute("accessToken");
-//
-//        // 토큰이 있다면 헤더에 추가
-//        if (accessToken != null) {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.set("Authorization", "Bearer " + accessToken);
-//
-//            // RestTemplate 또는 HttpClient 등을 사용하여 헤더를 설정하고 요청을 보낼 수 있습니다.
-//            // 이 부분은 사용하고 있는 라이브러리에 따라 달라집니다.
-//            // 여기서는 ResponseEntity를 사용하는 가상의 예시를 보여드립니다.
-//            ResponseEntity<String> responseEntity = restTemplate.exchange(
-//                    "http://localhost:9090/board",
-//                    HttpMethod.GET,
-//                    new HttpEntity<>(headers),
-//                    String.class
-//            );
-//
-//            // 응답 처리 등의 로직 수행
-//            String responseBody = responseEntity.getBody();
-//            System.out.println("Response from /board: " + responseBody);
-//        } else {
-//            System.out.println("No access token found in session.");
-//        }
-//
-//        return "게시판 엔드포인트";
-//    }
-//}
+package Sun.crud.res.controller;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;  // 추가
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;  // 추가
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import Sun.crud.res.Service.BoardService;
+import Sun.crud.res.dto.WriteDTO;
+import Sun.crud.res.entity.BoardEntity;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+
+@Controller
+public class BoardController {
+	
+	public static String SECRET_KEY;
+	
+    @Value("${jwt.secretKey}")
+    public void setSecretKey(String SECRET_KEY) {
+    	BoardController.SECRET_KEY = SECRET_KEY;
+    }
+	
+	@Autowired
+	private BoardService boardService;
+	
+	@GetMapping("/board")
+		public String board() {
+			return "board";
+		}
+	
+
+    @GetMapping("/write")
+    public String write() {
+        return "write";
+    }
+    
+ // 공지사항 작성
+    @ResponseBody
+    @PostMapping("/write") 	
+    public ResponseEntity<?> notice(@RequestBody WriteDTO writeDTO, HttpServletRequest request) {
+        try {
+            // 엑세스 토큰 가져오기
+            Cookie[] cookies = request.getCookies();
+            String accessToken = null;
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        accessToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+            System.err.println(accessToken);
+
+            // 엑세스 토큰 파싱 및 작성자 설정
+            String username = extractSubject(accessToken);
+            System.err.println(username);
+
+            String title = writeDTO.getPostTitle();
+            String content = writeDTO.getPostContent();
+
+            BoardEntity boardEntity = new BoardEntity();
+            boardEntity.setTitle(title);
+            boardEntity.setContent(content);
+
+            boardService.insert(boardEntity);
+
+            return ResponseEntity.status(200).body("ok");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal Server Error");
+        }
+    }
+    public static String extractSubject(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+            return claims.getSubject();
+        } catch (Exception e) {
+            e.printStackTrace(); // 또는 로깅 프레임워크를 사용하여 로그 출력
+            return null; // 예외 발생 시 null 반환 또는 적절한 처리를 수행
+        }
+    }
+
+
+
+  
+
+}
