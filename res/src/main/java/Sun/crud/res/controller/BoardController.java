@@ -1,4 +1,6 @@
 package Sun.crud.res.controller;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -34,6 +36,9 @@ public class BoardController {
     public void setSecretKey(String SECRET_KEY) {
     	BoardController.SECRET_KEY = SECRET_KEY;
     }
+    
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd");
+
 	
 	@Autowired
 	private BoardService boardService;
@@ -77,6 +82,11 @@ public class BoardController {
             BoardEntity boardEntity = new BoardEntity();
             boardEntity.setTitle(title);
             boardEntity.setContent(content);
+            boardEntity.setWriter(username);
+         // 현재 날짜의 월/일 설정
+            LocalDate currentDate = LocalDate.now();
+            String formattedDate = currentDate.format(formatter);
+            boardEntity.setCreatedDate(formattedDate);
 
             boardService.insert(boardEntity);
 
@@ -88,10 +98,10 @@ public class BoardController {
     public static String extractSubject(String token) {
         try {
             Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-            return claims.getSubject();
+            return claims.get("name", String.class);
         } catch (Exception e) {
-            e.printStackTrace(); // 또는 로깅 프레임워크를 사용하여 로그 출력
-            return null; // 예외 발생 시 null 반환 또는 적절한 처리를 수행
+            e.printStackTrace(); // 력
+            return null; // 
         }
     }
 

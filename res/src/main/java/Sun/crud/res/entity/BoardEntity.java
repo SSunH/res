@@ -40,7 +40,7 @@ public class BoardEntity  {
 	
 	@Column(name = "createdDate")
 	@Comment("작성날짜")
-	private Date createdDate;
+	private String createdDate;
 	
 	
 }
