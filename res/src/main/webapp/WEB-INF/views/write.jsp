@@ -29,8 +29,9 @@
                     contentType: 'application/json', // 데이터 형식 지정
                     data: JSON.stringify(postData), // JSON 문자열로 변환하여 전송
                     success: function(response) {
-                        console.log('Post created successfully');
-                        // 여기에서 필요한 추가 동작 수행
+                    	  alert('작성되었습니다.');
+                          // 게시물 작성 성공 후 /board로 이동
+                          window.location.href = '/board';
                     },
                     error: function(error) {
                         console.error('Error creating post:', error);

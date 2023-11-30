@@ -1,14 +1,24 @@
 package Sun.crud.res.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
+import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+	@Bean
+    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new HiddenHttpMethodFilter();
+    }
 
-   
+    @Bean
+    public HttpPutFormContentFilter httpPutFormContentFilter() {
+        return new HttpPutFormContentFilter();
+    }
 	
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -23,4 +33,6 @@ public class WebConfig implements WebMvcConfigurer {
         		// 모든 헤더 허용
         		.allowedHeaders("*");
     }
+    
+    
 }
