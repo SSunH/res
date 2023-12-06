@@ -48,7 +48,6 @@
 
 <button type="button" class="btn btn-outline-secondary" id="b-write">글쓰기</button>
 
-<!-- Include the Bootstrap JavaScript libraries -->
 </body>
 <script>
     // 클릭 시 /write로 이동

@@ -1,16 +1,12 @@
 package Sun.crud.res.controller;
-import java.net.http.HttpRequest;
-import java.time.Duration;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.stereotype.Controller;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import Sun.crud.res.Service.BoardService;
-import Sun.crud.res.dto.BoardDTO;
 import Sun.crud.res.dto.WriteDTO;
 import Sun.crud.res.entity.BoardEntity;
 import Sun.crud.res.utils.jwtUtil;
@@ -160,7 +155,6 @@ public class BoardController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Handle other exceptions if needed
             return new ModelAndView("403 Forbidden");
         }
     }
